@@ -1,13 +1,17 @@
+using Elastic.Clients.Elasticsearch;
+using Search;
+using Search.Infrastructure.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.Configure<AppSettings>(builder.Configuration);
+builder.ConfigureElasticSearch();
+builder.ConfigureBroker();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -16,29 +20,25 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
-app.MapGet("/weatherforecast", () =>
+
+app.MapGet("/", async (ElasticsearchClient client) =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    var tweet = new Tweet
+    {
+        Id = 1,
+        User = "Mohsen",
+        PostDate = new DateTime(2024, 11, 15),
+        Message = "Trying out the client, so far so good?"
+    };
+
+    var response = await client.IndexAsync(tweet, index: "my-tweet-index");
+
+    if (response.IsValidResponse)
+    {
+        Console.WriteLine($"Index document with ID {response.Id} succeeded.");
+    }
 })
-.WithName("GetWeatherForecast")
 .WithOpenApi();
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
