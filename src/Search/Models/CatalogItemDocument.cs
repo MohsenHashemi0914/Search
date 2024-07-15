@@ -4,10 +4,10 @@ public class CatalogItemDocument
 {
     public const string IndexName = "catalog-item-index";
 
-    public required string Name { get; set; }
-    public required string Description { get; set; }
-    public required string CatalogCategory { get; set; }
-    public required string CatalogBrand { get; set; }
-    public required string Slug { get; set; }
-    public required string DetailUrl { get; set; }
+    public required string Name { get; init; }
+    public required string Description { get; init; }
+    public required string CatalogCategory { get; init; }
+    public required string CatalogBrand { get; init; }
+    public required string Slug { get; init; }
+    public required string DetailUrl { get; init; }
 }
