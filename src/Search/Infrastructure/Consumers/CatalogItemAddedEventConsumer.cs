@@ -1,7 +1,7 @@
-﻿using Catalog.Infrastructure.IntegrationEvents;
-using Elastic.Clients.Elasticsearch;
+﻿using Elastic.Clients.Elasticsearch;
 using MassTransit;
 using Search.Models;
+using SystemDesign.InternalEvents.Catalog;
 
 namespace Search.Infrastructure.Consumers;
 
